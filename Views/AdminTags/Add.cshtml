@@ -1,3 +1,8 @@
+@model Blog_web_app.Models.ViewModels.AddTagRequest;
+@{
+
+}
+
 <!doctype html>
 <html lang="en">
 
@@ -27,12 +32,12 @@
             <form method="post">
                 <div class="mb-3">
                     <label class="form-label"> Name </label>
-                    <input type="text" class="form-control" id="name">
+                    <input type="text" class="form-control" id="name" asp-for = "Name">
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label"> Display Name </label>
-                    <input type="text" class="form-control" id="displayName">
+                    <input type="text" class="form-control" id="displayName" asp-for="DisplayName">
                 </div>
 
                 <div class="mb-5">
