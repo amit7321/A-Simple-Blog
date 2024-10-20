@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using Blog_web_app.Data;
 using Blog_web_app.Models.Domain;
 using Blog_web_app.Models.ViewModels;
@@ -21,8 +20,8 @@ public class AdminTagsController : Controller
     }
 
     [HttpPost]
-    // [ActionName("Add")]
-    public IActionResult Add(AddTagRequest addTagRequest)
+    [ActionName("Add")]
+    public IActionResult AddList(AddTagRequest addTagRequest)
     {
         var tag = new Tag
         {
@@ -40,5 +39,14 @@ public class AdminTagsController : Controller
         var displayName = Request.Form["displayName"]; */
 
         return View("Add");
-    } 
+    }
+
+    [HttpGet]
+    [ActionName("List")]
+    public IActionResult ListTag()
+    {
+        var tags = blogDbContext.Tags.ToList();
+
+        return View(tags);
+    }
 }
