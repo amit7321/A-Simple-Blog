@@ -49,4 +49,50 @@ public class AdminTagsController : Controller
 
         return View(tags);
     }
+
+    [HttpGet]
+    [ActionName("Edit")]
+    public IActionResult EditTag(Guid id)
+    {
+        var tag = blogDbContext.Tags.FirstOrDefault(t => t.Id == id);
+
+        if (tag != null)
+        {
+            var editTagRequest = new EditTagRequest
+            {
+                Id = tag.Id,
+                Name = tag.Name,
+                DisplayName = tag.DisplayName
+            };
+
+            return View(editTagRequest);
+        }
+
+        return View();
+    }
+
+    [HttpPost]
+    [ActionName("Edit")]
+    public IActionResult EditTag(EditTagRequest editTagRequest)
+    {
+        var tag = new Tag
+        {
+            Id = editTagRequest.Id,
+            Name = editTagRequest.Name,
+            DisplayName = editTagRequest.DisplayName
+        };
+
+        var currentTag = blogDbContext.Tags.Find(tag.Id);
+
+        if (currentTag != null)
+        {
+            currentTag.Name = editTagRequest.Name;
+            currentTag.DisplayName = editTagRequest.DisplayName;
+
+            blogDbContext.SaveChanges();
+            return RedirectToAction("EditTag", new { id = editTagRequest.Id });
+        }
+
+        return RedirectToAction("EditTag", new { id = editTagRequest.Id });
+    }
 }
