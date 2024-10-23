@@ -86,13 +86,33 @@ public class AdminTagsController : Controller
 
         if (currentTag != null)
         {
-            currentTag.Name = editTagRequest.Name;
-            currentTag.DisplayName = editTagRequest.DisplayName;
+            currentTag.Name = tag.Name;
+            currentTag.DisplayName = tag.DisplayName;
 
             blogDbContext.SaveChanges();
-            return RedirectToAction("EditTag", new { id = editTagRequest.Id });
+            return RedirectToAction("List", new { id = editTagRequest.Id });
         }
 
-        return RedirectToAction("EditTag", new { id = editTagRequest.Id });
+        return RedirectToAction("List", new { id = editTagRequest.Id });
     }
+
+    [HttpPost]
+    [ActionName("Delete")]
+    public IActionResult DeleteTag(EditTagRequest editTagRequest)
+    {
+        var tag = blogDbContext.Tags.Find(editTagRequest.Id);
+
+        if (tag != null)
+        {
+            blogDbContext.Tags.Remove(tag);
+            blogDbContext.SaveChanges();
+
+            return RedirectToAction("List", new { id = editTagRequest.Id });
+        }
+
+        return RedirectToAction("Edit", new { id = editTagRequest.Id });
+
+    }
+
+
 }
