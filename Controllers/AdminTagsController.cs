@@ -1,16 +1,18 @@
 using Blog_web_app.Data;
 using Blog_web_app.Models.Domain;
 using Blog_web_app.Models.ViewModels;
+using Blog_web_app.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Blog_web_app.Controllers;
 
 public class AdminTagsController : Controller
 {
-    private readonly BlogDbContext blogDbContext;
-    public AdminTagsController(BlogDbContext blogDbContext)
+    private readonly ITagRepository tagRepository;
+    public AdminTagsController(ITagRepository tagRepository)
     {
-        this.blogDbContext = blogDbContext;
+        this.tagRepository = tagRepository;
     }
 
     [HttpGet]
@@ -21,7 +23,7 @@ public class AdminTagsController : Controller
 
     [HttpPost]
     [ActionName("Add")]
-    public IActionResult AddList(AddTagRequest addTagRequest)
+    public async Task<IActionResult> Add(AddTagRequest addTagRequest)
     {
         var tag = new Tag
         {
@@ -29,32 +31,24 @@ public class AdminTagsController : Controller
             DisplayName = addTagRequest.DisplayName
         };
 
-        blogDbContext.Tags.Add(tag);
-        blogDbContext.SaveChanges();
+        await tagRepository.AddAsync(tag);
 
-        // var name = addTagRequest.Name;
-        // var displayName = addTagRequest.DisplayName;
-
-        /* var name = Request.Form["name"];
-        var displayName = Request.Form["displayName"]; */
-
-        return View("Add");
+        return RedirectToAction("List");
     }
 
     [HttpGet]
     [ActionName("List")]
-    public IActionResult ListTag()
+    public async Task<IActionResult> ListTag()
     {
-        var tags = blogDbContext.Tags.ToList();
-
+        var tags = await tagRepository.GetAllAsync();
         return View(tags);
     }
 
     [HttpGet]
     [ActionName("Edit")]
-    public IActionResult EditTag(Guid id)
+    public async Task<IActionResult> EditTag(Guid id)
     {
-        var tag = blogDbContext.Tags.FirstOrDefault(t => t.Id == id);
+        var tag = await tagRepository.GetAsync(id);
 
         if (tag != null)
         {
@@ -68,12 +62,12 @@ public class AdminTagsController : Controller
             return View(editTagRequest);
         }
 
-        return View();
+        return View("List");
     }
 
     [HttpPost]
     [ActionName("Edit")]
-    public IActionResult EditTag(EditTagRequest editTagRequest)
+    public async Task<IActionResult> EditTag(EditTagRequest editTagRequest)
     {
         var tag = new Tag
         {
@@ -82,15 +76,15 @@ public class AdminTagsController : Controller
             DisplayName = editTagRequest.DisplayName
         };
 
-        var currentTag = blogDbContext.Tags.Find(tag.Id);
+        var updatedTag = await tagRepository.UpdateAsync(tag);
 
-        if (currentTag != null)
+        if(updatedTag != null)
         {
-            currentTag.Name = tag.Name;
-            currentTag.DisplayName = tag.DisplayName;
 
-            blogDbContext.SaveChanges();
-            return RedirectToAction("List", new { id = editTagRequest.Id });
+        }
+        else
+        {
+
         }
 
         return RedirectToAction("List", new { id = editTagRequest.Id });
@@ -98,19 +92,17 @@ public class AdminTagsController : Controller
 
     [HttpPost]
     [ActionName("Delete")]
-    public IActionResult DeleteTag(EditTagRequest editTagRequest)
+    public async Task<IActionResult> DeleteTag(EditTagRequest editTagRequest)
     {
-        var tag = blogDbContext.Tags.Find(editTagRequest.Id);
+        var deletedTag = await tagRepository.DeleteAsync(editTagRequest.Id);
 
-        if (tag != null)
+        if (deletedTag != null)
         {
-            blogDbContext.Tags.Remove(tag);
-            blogDbContext.SaveChanges();
-
-            return RedirectToAction("List", new { id = editTagRequest.Id });
+            return RedirectToAction("List");
         }
 
-        return RedirectToAction("Edit", new { id = editTagRequest.Id });
+
+        return RedirectToAction("List", new { id = editTagRequest.Id });
 
     }
 
