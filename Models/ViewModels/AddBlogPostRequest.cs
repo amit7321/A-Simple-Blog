@@ -18,5 +18,5 @@ public class AddBlogPostRequest
     public IEnumerable<SelectListItem> Tags { get; set; }
 
     //Collect tags
-    public string SelectedTag { get; set; }
+    public string[] SelectedTags { get; set; } = Array.Empty<string>();
 }
