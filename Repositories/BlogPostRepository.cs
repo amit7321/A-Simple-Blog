@@ -1,5 +1,6 @@
 using Blog_web_app.Data;
 using Blog_web_app.Models.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace Blog_web_app.Repositories;
 
@@ -35,9 +36,9 @@ public class BlogPostRepository : IBlogPostRepository
         return null;
     }
 
-    public Task<IEnumerable<BlogPost>> GetAllAsync()
+    public async Task<IEnumerable<BlogPost>> GetAllAsync()
     {
-        throw new NotImplementedException();
+        return await blogDbContext.BlogPosts.Include(x => x.Tags).ToListAsync();
     }
 
     public Task<BlogPost?> GetAsync(Guid id)

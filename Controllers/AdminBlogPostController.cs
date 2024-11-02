@@ -67,4 +67,13 @@ public class AdminBlogPostController : Controller
 
         return RedirectToAction("Add");
     }
+
+    [HttpGet]
+    [ActionName("List")]
+    public async Task<IActionResult> BlogList()
+    {
+        var blogList = await blogPostRepository.GetAllAsync();
+
+        return View(blogList);
+    }
 }
