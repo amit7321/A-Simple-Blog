@@ -65,7 +65,7 @@ public class AdminBlogPostController : Controller
 
         await blogPostRepository.AddAsync(blog);
 
-        return RedirectToAction("Add");
+        return RedirectToAction("List");
     }
 
     [HttpGet]
@@ -150,5 +150,21 @@ public class AdminBlogPostController : Controller
         }
 
         return RedirectToAction("List");
+    }
+
+    [HttpPost]
+    [ActionName("Delete")]
+    public async Task<IActionResult> DeleteBlog(EditBlogPostRequest editBlogPostRequest)
+    {
+        var deletedBlog = await blogPostRepository.DeleteAsync(editBlogPostRequest.Id);
+
+        if (deletedBlog != null)
+        {
+            return RedirectToAction("List");
+        }
+
+
+        return RedirectToAction("List", new { id = editBlogPostRequest.Id });
+
     }
 }
