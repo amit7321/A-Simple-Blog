@@ -76,4 +76,79 @@ public class AdminBlogPostController : Controller
 
         return View(blogList);
     }
+
+    [HttpGet]
+    [ActionName("Edit")]
+    public async Task<IActionResult> EditBlog(Guid id)
+    {
+        var blog = await blogPostRepository.GetAsync(id);
+        var tags = await tagRepository.GetAllAsync();
+
+        if (blog != null)
+        {
+            var blogModel = new EditBlogPostRequest
+            {
+                Id = blog.Id,
+                Heading = blog.Heading,
+                PageTitle = blog.PageTitle,
+                Content = blog.Content,
+                ShortDescription = blog.ShortDescription,
+                FeatureImageUrl = blog.FeatureImageUrl,
+                UrlHandle = blog.UrlHandle,
+                PublishedDate = blog.PublishedDate,
+                Author = blog.Author,
+                Visible = blog.Visible,
+                Tags = tags.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() }),
+                SelectedTags = blog.Tags.Select(x => x.Id.ToString()).ToArray()
+            };
+
+            return View(blogModel);
+        }
+
+        return View(null);
+    }
+
+    [HttpPost]
+    [ActionName("Edit")]
+    public async Task<IActionResult> EditBlog(EditBlogPostRequest editBlogPostRequest)
+    {
+        var editedBlog = new BlogPost
+        {
+            Id = editBlogPostRequest.Id,
+            Heading = editBlogPostRequest.Heading,
+            PageTitle = editBlogPostRequest.PageTitle,
+            Content = editBlogPostRequest.Content,
+            ShortDescription = editBlogPostRequest.ShortDescription,
+            FeatureImageUrl = editBlogPostRequest.FeatureImageUrl,
+            UrlHandle = editBlogPostRequest.UrlHandle,
+            PublishedDate = editBlogPostRequest.PublishedDate,
+            Author = editBlogPostRequest.Author,
+            Visible = editBlogPostRequest.Visible,
+        };
+
+        var selectedTags = new List<Tag>();
+        foreach (var selectedTag in editBlogPostRequest.SelectedTags)
+        {
+            if (Guid.TryParse(selectedTag, out var tag))
+            {
+                var foungTag = await tagRepository.GetAsync(tag);
+
+                if (foungTag != null)
+                {
+                    selectedTags.Add(foungTag);
+                }
+            }
+        }
+
+        editedBlog.Tags = selectedTags;
+
+        var updatedBlog = await blogPostRepository.UpdateAsync(editedBlog);
+
+        if (updatedBlog != null)
+        {
+            return RedirectToAction("List");
+        }
+
+        return RedirectToAction("List");
+    }
 }
