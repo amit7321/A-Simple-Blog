@@ -141,3 +141,5 @@ D:\Projects and Codes\.Net\Blog web app\obj\Debug\net8.0\Blog web app.pdb
 D:\Projects and Codes\.Net\Blog web app\obj\Debug\net8.0\Blog web app.genruntimeconfig.cache
 D:\Projects and Codes\.Net\Blog web app\obj\Debug\net8.0\ref\Blog web app.dll
 D:\Projects and Codes\.Net\Blog web app\obj\Debug\net8.0\Blog web app.sourcelink.json
+D:\Projects and Codes\.Net\Blog web app\bin\Debug\net8.0\package-lock.json
+D:\Projects and Codes\.Net\Blog web app\bin\Debug\net8.0\package.json
